@@ -5,3 +5,4 @@ Understanding CloudFormation with basic templates
 Basic EC2 with a VPC with minimal features.
 
 
+![Alt text](ec2-vpc-basic.png)
