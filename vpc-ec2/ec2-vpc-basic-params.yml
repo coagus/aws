@@ -2,21 +2,38 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Description: Single EC2 with VPC in a single region
 
+Parameters:
+  ProjectNick:
+    Description: Project nick name
+    Type: String
+    Default: myproject
+    AllowedPattern: '[a-z0-9]*'
+  VpcCidrBlock:
+    Description: VPC CidrBlock
+    Type: String
+    Default: 10.0.0.0/16
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+  SubNetCidrBlock:
+    Description: Subnet CidrBlock
+    Type: String
+    Default: 10.0.0.0/24
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+
 Resources:
   VPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: !Ref VpcCidrBlock
       Tags:
         - Key: Name
-          Value: vpc-x-project
+          Value: !Join [ "-", [ 'vpc', !Ref ProjectNick ] ]
 
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
-          Value: ig-x-project
+          Value: !Join [ "-", [ 'ig', !Ref ProjectNick ] ]
 
   VPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -30,7 +47,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: rt-x-project
+          Value: !Join [ "-", [ 'rt', !Ref ProjectNick ] ]
 
   Route:
     Type: AWS::EC2::Route
@@ -45,11 +62,11 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: "us-east-1a"
-      CidrBlock: 10.0.1.0/24
+      CidrBlock: !Ref SubNetCidrBlock
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: subnet-x-project
+          Value: !Join [ "-", [ 'subnet', !Ref ProjectNick ] ]
 
   SubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
@@ -61,6 +78,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Enable HTTP from 0.0.0.0/0
+      GroupName: !Join [ "-", [ 'segr', !Ref ProjectNick ] ]
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: '80'
@@ -78,7 +96,7 @@ Resources:
         - !Ref SecurityGroup
       Tags:
         - Key: Name
-          Value: ec2-x-project
+          Value: !Join [ "-", [ 'ec2', !Ref ProjectNick ] ]
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
