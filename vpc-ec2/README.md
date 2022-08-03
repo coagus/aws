@@ -20,7 +20,7 @@ Basic EC2 with a VPC with minimal features.
 ![subnet](img/subnet.png)
 
 ### Internet Gateway
-![internet gateway](img/internetwateway.png)
+![internet gateway](img/internetgateway.png)
 
 ### Route Table
 ![route table](img/routetable.png)
