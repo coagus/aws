@@ -24,3 +24,6 @@ Basic EC2 with a VPC with minimal features.
 
 ### Route Table
 ![route table](img/routetable.png)
+
+### Result with mapping us-west-2
+![route table](img/result_us_west_2.png)

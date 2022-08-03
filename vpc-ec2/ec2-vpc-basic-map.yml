@@ -1,6 +1,13 @@
 AWSTemplateFormatVersion: 2010-09-09
 
-Description: Single EC2 with VPC in a single region with params
+Description: Single EC2 with VPC in a single region with params and mapping only us-east-1 or us-west-2
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      AMI: ami-0ed9277fb7eb570c9
+    us-west-2:
+      AMI: ami-00f7e5c52c0f43726
 
 Parameters:
   ProjectNick:
@@ -33,7 +40,7 @@ Resources:
     Properties:
       Tags:
         - Key: Name
-          Value: !Join [ "-", [ 'ig', !Ref ProjectNick ] ]
+          Value: !Join [ "-", [ 'igw', !Ref ProjectNick ] ]
 
   VPCGatewayAttachment:
     Type: AWS::EC2::VPCGatewayAttachment
@@ -61,7 +68,7 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref VPC
-      AvailabilityZone: "us-east-1a"
+      AvailabilityZone: !Select [ 0, !GetAZs  '' ]
       CidrBlock: !Ref SubNetCidrBlock
       MapPublicIpOnLaunch: true
       Tags:
@@ -89,7 +96,7 @@ Resources:
   EC2:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: ami-0ed9277fb7eb570c9
+      ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", AMI]
       InstanceType: t2.micro
       SubnetId: !Ref Subnet
       SecurityGroupIds: 
